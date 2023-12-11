@@ -1,4 +1,5 @@
 # vector.py
+import math
 
 def validate_vector(vector):
     """
@@ -9,6 +10,15 @@ def validate_vector(vector):
     """
     if not isinstance(vector, list) or not all(isinstance(x, (int, float)) for x in vector):
         raise TypeError("Input must be a list of numbers.")
+
+def scalar_multiply(scalar, vector):
+    """
+    Multiply a vector by a scalar.
+    """
+    if not isinstance(scalar, (int, float)):
+        raise TypeError("Scalar must be a number.")
+    validate_vector(vector)
+    return [scalar * i for i in vector]
 
 def add(v1, v2):
     """
@@ -59,19 +69,6 @@ def dot_product(v1, v2):
     if len(v1) != len(v2):
         raise ValueError("Both vectors must have the same length.")
     return sum([v1[i] * v2[i] for i in range(len(v1))])
-
-def scalar_multiply(scalar, vector):
-    """
-    Multiply a vector by a scalar.
-    
-    Parameters:
-    scalar: float or int
-    vector: list of numbers
-    
-    Returns:
-    result: list of numbers
-    """
-    return [scalar * i for i in vector]
 
 def magnitude(vector):
     """
@@ -135,3 +132,21 @@ def angle_between(v1, v2):
     angle_in_degrees = math.degrees(angle_in_radians)
 
     return angle_in_degrees
+
+def cross_product(v1, v2):
+    """
+    Calculate the cross product of two 3D vectors.
+    """
+    # ... implementation ...
+
+def vector_projection(v1, v2):
+    """
+    Project vector v1 onto vector v2.
+    """
+    # ... implementation ...
+
+def distance_between(v1, v2):
+    """
+    Calculate the Euclidean distance between two vectors.
+    """
+    # ... implementation ...
