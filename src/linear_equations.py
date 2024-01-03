@@ -1,66 +1,52 @@
-# Linear Equations (linear_equations.py)
-import numpy as np
+from matrix import Matrix
+from vector import Vector
 
-def solve_linear_systems(A, b):
-    """
-    Solves a linear system Ax = b using numpy's linear algebra solver
+def gaussian_elimination(aug_matrix):
+    # Implement Gaussian elimination to solve the linear system
+    # This is a simplified version and might not cover all edge cases
+    n = len(aug_matrix.matrix)
 
-    Args:
-    - A (numpy.ndarray): Coefficient matrix
-    - b (numpy.ndarray): Constant terms
+    for i in range(n):
+        # Search for maximum in this column
+        max_el = abs(aug_matrix.matrix[i][i])
+        max_row = i
+        for k in range(i+1, n):
+            if abs(aug_matrix.matrix[k][i]) > max_el:
+                max_el = abs(aug_matrix.matrix[k][i])
+                max_row = k
 
-    Returns:
-    - numpy.ndarray: Solution vector x or error message
-    """
-    if np.linalg.det(A) == 0:
-        return "Cannot solve: Singular matrix"
-    
-    try:
-        return np.linalg.solve(A, b)
-    except np.linalg.LinAlgError:
-        return "Linear system cannot be solved due to a singular matrix"
+        # Swap maximum row with current row
+        aug_matrix.matrix[i], aug_matrix.matrix[max_row] = aug_matrix.matrix[max_row], aug_matrix.matrix[i]
 
-def matrix_inverse(A):
-    """
-    Computes the inverse of a matrix A using numpy's linear algebra module.
+        # Make all rows below this one 0 in current column
+        for k in range(i+1, n):
+            c = -aug_matrix.matrix[k][i] / aug_matrix.matrix[i][i]
+            for j in range(i, n+1):
+                if i == j:
+                    aug_matrix.matrix[k][j] = 0
+                else:
+                    aug_matrix.matrix[k][j] += c * aug_matrix.matrix[i][j]
 
-    Args:
-    - A (numpy.ndarray): A square matrix
+    # Solve equation Ax=b for an upper triangular matrix A
+    x = [0 for i in range(n)]
+    for i in range(n-1, -1, -1):
+        x[i] = aug_matrix.matrix[i][n] / aug_matrix.matrix[i][i]
+        for k in range(i-1, -1, -1):
+            aug_matrix.matrix[k][n] -= aug_matrix.matrix[k][i] * x[i]
+    return x
 
-    Returns:
-    - numpy.ndarray: Inverse of A or error message
-    """
-    if np.linalg.det(A) == 0:
-        return "Cannot compute inverse: Singular matrix"
-    
-    try:
-        return np.linalg.inv(A)
-    except np.linalg.LinAlgError:
-        return "Cannot compute inverse due to singular matrix"
+def solve_linear_system(matrix, vector):
+    # Create an augmented matrix from A and b
+    augmented_matrix = [row + [vector.vector[i]] for i, row in enumerate(matrix.matrix)]
+    aug_matrix = Matrix(augmented_matrix)
 
-def matrix_determinant(A):
-    """
-    Computes the determinant of matrix A.
+    # Solve using Gaussian elimination
+    return gaussian_elimination(aug_matrix)
 
-    Args:
-    - A (numpy.ndarray): A square matrix
-
-    Returns:
-    - float: Determinant of A
-    """
-    return np.linalg.det(A)
-
-def matrix_transpose(A):
-    """
-    Computes the transpose of matrix A.
-
-    Args:
-    - A (numpy.ndarray): A matrix
-
-    Returns:
-    - numpy.ndarray: Transpose of A
-    """
-    return np.transpose(A)
-
-# TODO: Add some additional functions: matrix_decomposition, eigenvalues and eigenvectors calculation, etc.
+# Example usage
+if __name__ == "__main__":
+    A = Matrix([[3, 2, -1], [2, -2, 4], [-1, 0.5, -1]])
+    b = Vector([1, -2, 0])
+    solution = solve_linear_system(A, b)
+    print("Solution of the system:", solution)
 

@@ -1,152 +1,38 @@
-# vector.py
 import math
 
-def validate_vector(vector):
-    """
-    Validate that the input is a vector (a list of numbers).
+class Vector:
+    def __init__(self, vector):
+        self.vector = vector
 
-    Parameters:
-    vector: list of numbers
-    """
-    if not isinstance(vector, list) or not all(isinstance(x, (int, float)) for x in vector):
-        raise TypeError("Input must be a list of numbers.")
+    def dot_product(self, other):
+        if len(self.vector) != len(other.vector):
+            raise ValueError("Vectors must be of the same length for dot product.")
+        return sum(a * b for a, b in zip(self.vector, other.vector))
 
-def scalar_multiply(scalar, vector):
-    """
-    Multiply a vector by a scalar.
-    """
-    if not isinstance(scalar, (int, float)):
-        raise TypeError("Scalar must be a number.")
-    validate_vector(vector)
-    return [scalar * i for i in vector]
+    def cross_product(self, other):
+        if len(self.vector) != 3 or len(other.vector) != 3:
+            raise ValueError("Cross product is defined only for 3D vectors.")
+        a1, a2, a3 = self.vector
+        b1, b2, b3 = other.vector
+        return Vector([a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1])
 
-def add(v1, v2):
-    """
-    Add two vectors.
-    
-    Parameters:
-    v1, v2: list of numbers
-    
-    Returns:
-    List of numbers representing the vector sum.
-    """
-    validate_vector(v1)
-    validate_vector(v2)
-    if len(v1) != len(v2):
-        raise ValueError("Both vectors must have the same length.")
-    return [v1[i] + v2[i] for i in range(len(v1))]
+    def magnitude(self):
+        return math.sqrt(sum(x ** 2 for x in self.vector))
 
-def subtract(v1, v2):
-    """
-    Subtract two vectors.
-    
-    Parameters:
-    v1: list of numbers
-    v2: list of numbers
-    
-    Returns:
-    result: list of numbers
-    """
-    validate_vector(v1)
-    validate_vector(v2)
-    if len(v1) != len(v2):
-        raise ValueError("Both vectors must have the same length.")
-    return [v1[i] - v2[i] for i in range(len(v1))]
+# Utility functions specific to vectors
+def print_vector(vector):
+    formatted_vector = ', '.join(map(str, vector.vector))
+    print(f"<{formatted_vector}>")
 
-def dot_product(v1, v2):
-    """
-    Calculate the dot product of two vectors.
-    
-    Parameters:
-    v1: list of numbers
-    v2: list of numbers
-    
-    Returns:
-    result: float or int
-    """
-    validate_vector(v1)
-    validate_vector(v2)
-    if len(v1) != len(v2):
-        raise ValueError("Both vectors must have the same length.")
-    return sum([v1[i] * v2[i] for i in range(len(v1))])
+# Example usage
+if __name__ == "__main__":
+    vec1 = Vector([1, 2, 3])
+    vec2 = Vector([4, 5, 6])
 
-def magnitude(vector):
-    """
-    Calculate the magnitude (norm) of a vector.
-    
-    Parameters:
-    vector: list of numbers
-    
-    Returns:
-    Float representing the magnitude of the vector.
-    """
-    validate_vector(vector)
-    return sum(x**2 for x in vector)**0.5
+    dot_prod = vec1.dot_product(vec2)
+    print("Dot product of vec1 and vec2:", dot_prod)
 
-def normalize(vector):
-    """
-    Normalize a vector to unit length.
+    cross_prod = vec1.cross_product(vec2)
+    print("Cross product of vec1 and vec2:")
+    print_vector(cross_prod)
 
-    Parameters:
-    vector: list of numbers
-
-    Returns:
-    List of numbers representing the normalized vector.
-    """
-    validate_vector(vector)
-    mag = magnitude(vector)
-    if mag == 0:
-        raise ValueError("Cannot normalize a zero vector.")
-    return [x / mag for x in vector]
-
-def angle_between(v1, v2):
-    """
-    Calculate the angle (in degrees) between two vectors.
-
-    Parameters:
-    v1, v2: list of numbers
-
-    Returns:
-    Float representing the angle in degrees between the two vectors/
-    """
-    validate_vector(v1)
-    validate_vector(v2)
-    if len(v1) != len(v2):
-        raise ValueError("Both vectors must have the same length.")
-    
-    dot_prod = dot_product(v1, v2)
-    mag_v1 = magnitude(v1)
-    mag_v2 = magnitude(v2)
-
-    if mag_v1 * mag_v2 == 0:
-        raise ValueError("Cannot calculate angle with a zero vector.")
-    
-    # Calculate the cosine of the angle
-    cos_angle = dot_prod / (mag_v1 * mag_v2)
-
-    # Ensure the cosine value is within valid range to handle floating point errors
-    cos_angle = max(min(cos_angle, 1.0), -1.0)
-
-    # convert to degrees
-    angle_in_radians = math.acos(cos_angle)
-    angle_in_degrees = math.degrees(angle_in_radians)
-
-    return angle_in_degrees
-
-def cross_product(v1, v2):
-    """
-    Calculate the cross product of two 3D vectors.
-    """
-    # ... implementation ...
-
-def vector_projection(v1, v2):
-    """
-    Project vector v1 onto vector v2.
-    """
-    # ... implementation ...
-
-def distance_between(v1, v2):
-    """
-    Calculate the Euclidean distance between two vectors.
-    """
-    # ... implementation ...

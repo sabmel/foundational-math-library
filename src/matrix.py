@@ -1,78 +1,50 @@
-# matrix.py
+class Matrix:
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.rows = len(matrix)
+        self.columns = len(matrix[0]) if self.rows > 0 else 0
 
-def is_valid_matrix(matrix):
-    """Check if the input is a valid matrix."""
-    if not matrix or not all(isinstance(row, list) and len(row) == len(matrix[0]) for row in matrix):
-        raise ValueError("Input must be a non-empty matrix with equal row lengths.")
+    def add(self, other):
+        if self.rows != other.rows or self.columns != other.columns:
+            raise ValueError("Matrices must have the same dimensions for addition.")
+        return Matrix([[self.matrix[i][j] + other.matrix[i][j] for j in range(self.columns)] for i in range(self.rows)])
 
-def check_same_dimensions(m1, m2):
-    """Check if two matrices have the same dimensions."""
-    if len(m1) != len(m2) or len(m1[0]) != len(m2[0]):
-        raise ValueError("Both matrices must have the same dimensions.")
+    def subtract(self, other):
+        if self.rows != other.rows or self.columns != other.columns:
+            raise ValueError("Matrices must have the same dimensions for subtraction.")
+        return Matrix([[self.matrix[i][j] - other.matrix[i][j] for j in range(self.columns)] for i in range(self.rows)])
 
-def add(m1, m2):
-    """Add two matrices."""
-    is_valid_matrix(m1)
-    is_valid_matrix(m2)
-    check_same_dimensions(m1, m2)
-    return [[m1[i][j] + m2[i][j] for j in range(len(m1[0]))] for i in range(len(m1))]
+    def multiply(self, other):
+        if self.columns != other.rows:
+            raise ValueError("The number of columns in the first matrix must equal the number of rows in the second matrix.")
+        return Matrix([[sum(self.matrix[i][k] * other.matrix[k][j] for k in range(self.columns)) for j in range(other.columns)] for i in range(self.rows)])
 
-def subtract(m1, m2):
-    """Subtract two matrices."""
-    is_valid_matrix(m1)
-    is_valid_matrix(m2)
-    check_same_dimensions(m1, m2)
-    return [[m1[i][j] - m2[i][j] for j in range(len(m1[0]))] for i in range(len(m1))]
+    def determinant(self):
+        if self.rows != self.columns:
+            raise ValueError("Determinant can only be calculated for square matrices.")
+        # Implement determinant calculation (e.g., using LU decomposition or recursive method)
+        pass
 
-def multiply(m1, m2):
-    """Multiply two matrices."""
-    is_valid_matrix(m1)
-    is_valid_matrix(m2)
-    if len(m1[0]) != len(m2):
-        raise ValueError("Number of columns in the first matrix must be equal to the number of rows in the second matrix.")
-    result = [[0] * len(m2[0]) for _ in range(len(m1))]
-    for i in range(len(m1)):
-        for j in range(len(m2[0])):
-            for k in range(len(m2)):
-                result[i][j] += m1[i][k] * m2[k][j]
-    return result
+    def inverse(self):
+        if self.rows != self.columns:
+            raise ValueError("Inverse can only be calculated for square matrices.")
+        # Implement inverse calculation (e.g., using Gaussian elimination or adjugate method)
+        pass
 
-def transpose(matrix):
-    """Return the transpose of a matrix."""
-    return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
+# Utility functions specific to matrices
+def print_matrix(matrix):
+    for row in matrix.matrix:
+        print(' '.join(map(str, row)))
 
-def determinant(matrix):
-    """Calculate the determinant of a 2x2 or 3x3 matrix."""
-    is_valid_matrix(matrix)
-    if len(matrix) != len(matrix[0]):
-        raise ValueError("Matrix must be square.")
+# Example usage
+if __name__ == "__main__":
+    mat1 = Matrix([[1, 2], [3, 4]])
+    mat2 = Matrix([[5, 6], [7, 8]])
 
-    if len(matrix) == 2 and len(matrix[0]) == 2:
-        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
-    elif len(matrix) == 3 and len(matrix[0]) == 3:
-        return (matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1])
-              - matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0])
-              + matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]))
-    else:
-        raise ValueError("Only 2x2 and 3x3 matrices are supported.")
+    sum_mat = mat1.add(mat2)
+    print("Sum of matrices:")
+    print_matrix(sum_mat)
 
-def inverse(matrix):
-    """Calculate the inverse of a 2x2 or 3x3 matrix."""
-    is_valid_matrix(matrix)
-    if len(matrix) != len(matrix[0]):
-        raise ValueError("Matrix must be square")
-    det = determinant(matrix)
-    if det == 0:
-        raise ValueError("Matrix is singular and has no inverse.")
-    
-    if len(matrix) == 2:
-        adjoint = [[matrix[1][1], -matrix[0][1]], [-matrix[1][0], matrix[0][0]]]
-    else:
-        adjoint = [
-            [(matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]), -(matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]), (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0])],
-            [-(matrix[0][1] * matrix[2][2] - matrix[0][2] * matrix[2][1]), (matrix[0][0] * matrix[2][2] - matrix[0][2] * matrix[2][0]), -(matrix[0][0] * matrix[2][1] - matrix[0][1] * matrix[2][0])],
-            [(matrix[0][1] * matrix[1][2] - matrix[0][2] * matrix[1][1]), -(matrix[0][0] * matrix[1][2] - matrix[0][2] * matrix[1][0]), (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0])]
-        ]
-    
-    return [[adjoint[i][j] / det for j in range(len(adjoint[0]))] for i in range(len(adjoint))]
-
+    prod_mat = mat1.multiply(mat2)
+    print("\nProduct of matrices:")
+    print_matrix(prod_mat)
